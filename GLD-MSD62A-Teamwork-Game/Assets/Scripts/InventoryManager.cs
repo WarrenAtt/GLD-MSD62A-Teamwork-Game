@@ -43,27 +43,19 @@ public class InventoryManager : MonoBehaviour
         RefreshInventoryGUI();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        //if (Input.GetKeyDown(KeyCode.J) || Input.GetKeyDown(KeyCode.K))
-        //    ChangeSelection();
-        //else if (Input.GetKeyDown(KeyCode.Return))
-        //    ConfirmSelection();
-
-    }
-
     public void ShowToggleInventory()
     {
         if (showInventory == false)
         {
             showInventory = true;
-            animator.SetTrigger("InventoryIn");
+            animator.SetBool("InventoryIn", true);
+            animator.SetBool("InventoryOut", false);
         }
         else
         {
             showInventory = false;
-            animator.SetTrigger("InventoryOut");
+            animator.SetBool("InventoryIn", false);
+            animator.SetBool("InventoryOut", true);
         }
     }
 
@@ -80,27 +72,17 @@ public class InventoryManager : MonoBehaviour
 
             //check if the quantity is 0, if it is we need to remove this item from the itemsForPlayer list
             if (inventoryItem.quantity == 0)
+            {
                 itemsForPlayer.RemoveAt(currentSelectedIndex);
+                currentSelectedIndex = 0;
+            }
 
             RefreshInventoryGUI();
         }
-
-
     }
 
     public void ChangeSelection(bool moveLeft)
     {
-        //move to the left hand side
-        //if (Input.GetKeyDown(KeyCode.J))
-        //{
-        //    currentSelectedIndex -= 1;
-        //}
-        ////move to the right hand side
-        //else if (Input.GetKeyDown(KeyCode.K))
-        //{
-        //    currentSelectedIndex += 1;
-        //}
-
         if (moveLeft == true)
             currentSelectedIndex -= 1;
         else
@@ -144,8 +126,6 @@ public class InventoryManager : MonoBehaviour
                 //increase the quantity by 1
                 item.quantity += 1;
             }
-
-
         }
 
         print("Number of Inventory Items for Player:" + itemsForPlayer.Count);
@@ -161,10 +141,13 @@ public class InventoryManager : MonoBehaviour
             //load the button
             GameObject button = itemsSelectionPanel.transform.Find("Button" + buttonId).gameObject;
 
-            //search for the child image and change its sprite
+            //search for the child image and change the sprite of the item
             button.transform.Find("Image").GetComponent<Image>().sprite = i.item.icon;
 
-            //change the quantity
+            //change the name of the item
+            button.transform.Find("ItemName").GetComponent<TextMeshProUGUI>().text = i.item.name;
+
+            //change the quantity of the item
             button.transform.Find("Quantity").GetComponent<TextMeshProUGUI>().text = "x" + i.quantity;
 
             //show selected/not selected colour based on buttonId and currentSelectedIndex

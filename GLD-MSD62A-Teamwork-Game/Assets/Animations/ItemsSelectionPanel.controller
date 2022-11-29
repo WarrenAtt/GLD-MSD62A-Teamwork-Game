@@ -49,7 +49,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: 6399b445711db4fe3983bbb9c98543d7, type: 2}
+  m_Motion: {fileID: 7400000, guid: eb916c39ba7ea4979b6f9958d11446c0, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -76,7 +76,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: bdc36a131223643e2bf1da5649425800, type: 2}
+  m_Motion: {fileID: 7400000, guid: 81f9b1e87096b49c0a2a646251b854aa, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -92,6 +92,9 @@ AnimatorStateTransition:
   m_Conditions:
   - m_ConditionMode: 1
     m_ConditionEvent: InventoryIn
+    m_EventTreshold: 0
+  - m_ConditionMode: 2
+    m_ConditionEvent: InventoryOut
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: -5654424045821250585}
@@ -117,13 +120,13 @@ AnimatorController:
   serializedVersion: 5
   m_AnimatorParameters:
   - m_Name: InventoryIn
-    m_Type: 9
+    m_Type: 4
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
     m_Controller: {fileID: 0}
   - m_Name: InventoryOut
-    m_Type: 9
+    m_Type: 4
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
@@ -175,7 +178,10 @@ AnimatorStateTransition:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: 
-  m_Conditions: []
+  m_Conditions:
+  - m_ConditionMode: 2
+    m_ConditionEvent: InventoryOut
+    m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 1322187919767960229}
   m_Solo: 0
@@ -200,6 +206,9 @@ AnimatorStateTransition:
   m_Conditions:
   - m_ConditionMode: 1
     m_ConditionEvent: InventoryOut
+    m_EventTreshold: 0
+  - m_ConditionMode: 2
+    m_ConditionEvent: InventoryIn
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: -4285572549309562489}

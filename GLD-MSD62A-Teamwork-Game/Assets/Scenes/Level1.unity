@@ -294,8 +294,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 85.9, y: 57.7}
-  m_SizeDelta: {x: 100, y: 100}
+  m_AnchoredPosition: {x: 89.05979, y: 57.7}
+  m_SizeDelta: {x: 103.6529, y: 103.6529}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &195621206
 MonoBehaviour:
@@ -874,8 +874,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.5999832, y: 57.7}
-  m_SizeDelta: {x: 100, y: 100}
+  m_AnchoredPosition: {x: 0.6438, y: 57.7}
+  m_SizeDelta: {x: 103.6529, y: 103.6529}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &744793548
 MonoBehaviour:
@@ -1204,10 +1204,10 @@ MonoBehaviour:
   numberOfItems: 5
   itemsSelectionPanel: {fileID: 1631445765}
   itemsAvailable:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  selectedColour: {r: 1, g: 0.91027665, b: 0, a: 0}
+  - {fileID: 11400000, guid: 637e0295c703e437b864a0808b38c8ef, type: 2}
+  - {fileID: 11400000, guid: d4270bbc423424db29115b7c40829537, type: 2}
+  - {fileID: 11400000, guid: d2a6b8ac22d5c49faae2b4888e5d5c4e, type: 2}
+  selectedColour: {r: 1, g: 0, b: 0.047945976, a: 1}
   notSelectedColour: {r: 1, g: 1, b: 1, a: 0}
   currentSelectedIndex: 0
   showInventory: 0
@@ -1462,7 +1462,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 663, y: 0}
+  m_AnchoredPosition: {x: 682, y: -7}
   m_SizeDelta: {x: 1083, y: 592}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!95 &1631445767
@@ -1629,8 +1629,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -87.1, y: 57.7}
-  m_SizeDelta: {x: 100, y: 100}
+  m_AnchoredPosition: {x: -90.25979, y: 57.7}
+  m_SizeDelta: {x: 103.6529, y: 103.6529}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1702768539
 MonoBehaviour:
@@ -2240,6 +2240,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7265223543464010851, guid: fe3537bbf66d82647b8ac3623de94c6c, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7265223543464010853, guid: fe3537bbf66d82647b8ac3623de94c6c, type: 3}
+      propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7265223543464010854, guid: fe3537bbf66d82647b8ac3623de94c6c, type: 3}

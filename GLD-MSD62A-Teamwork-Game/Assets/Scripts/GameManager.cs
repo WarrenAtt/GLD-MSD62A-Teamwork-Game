@@ -23,10 +23,7 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //if (Input.GetKeyDown(KeyCode.Tab))
-        //{
-        //    ShowToggleInventory();
-        //}
+
     }
 
     public void OnChangeGameState(GameState newGameState)
@@ -37,50 +34,24 @@ public class GameManager : MonoBehaviour
 
     public void OnButtonPressed(string key)
     {
-        if (gameState == GameState.AreaA)
+        switch (key)
         {
-            switch (key)
-            {
-                case "TAB":
-                    ShowToggleInventory();
-                    break;
-                case "K":
-                    canvas.GetComponentInChildren<InventoryManager>().ChangeSelection(false);
-                    break;
-                case "J":
-                    canvas.GetComponentInChildren<InventoryManager>().ChangeSelection(true);
-                    break;
-                case "RETURN":
-                    canvas.GetComponentInChildren<InventoryManager>().ConfirmSelection();
-                    break;
-            }
+            case "TAB":
+                ShowToggleInventory();
+                break;
+            case "K":
+                canvas.GetComponentInChildren<InventoryManager>().ChangeSelection(false);
+                break;
+            case "J":
+                canvas.GetComponentInChildren<InventoryManager>().ChangeSelection(true);
+                break;
+            case "RETURN":
+                canvas.GetComponentInChildren<InventoryManager>().ConfirmSelection();
+                break;
         }
-        else if (gameState == GameState.AreaB)
-        {
-            switch (key)
-            {
-                case "TAB":
-                    print("Hide the coin");
-                    GameObject coin = GameObject.Find("Plane2/Coin");
-                    if (coin != null) coin.SetActive(false);
-                    break;
-            }
-        }
+        
 
     }
-
-    //public void OnMouseButtonPressed(int mouse)
-    //{
-    //    if (gameState == GameState.AreaA)
-    //    {
-    //        switch (mouse)
-    //        {
-    //            case 0:
-    //                GameObject.Find("Player").GetComponent<PlayerManager>().ThrowGrenade();
-    //                break;
-    //        }
-    //    }
-    //}
 
     private void ShowToggleInventory()
     {
@@ -88,7 +59,7 @@ public class GameManager : MonoBehaviour
         canvas.GetComponentInChildren<InventoryManager>().ShowToggleInventory();
     }
 
-    //my game consists of two areas. AreaA (BLUE zone) and AreaB (GREEN Zone)
+    //my game consists of two areas. AreaA (PlayArea) and AreaB (SafeZone)
     public enum GameState
     {
         AreaA,

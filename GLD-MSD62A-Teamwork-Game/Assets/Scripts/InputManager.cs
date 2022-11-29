@@ -18,7 +18,5 @@ public class InputManager : MonoBehaviour
             GameManager.Instance.OnButtonPressed("J");
         if (Input.GetKeyDown(KeyCode.K))
             GameManager.Instance.OnButtonPressed("K");
-        //if (Input.GetMouseButtonDown(0))
-        //    GameManager.Instance.OnMouseButtonPressed(0);
     }
 }
