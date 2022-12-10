@@ -6,6 +6,8 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance = null;
     private GameObject canvas;
+    private GameObject[] enemies;
+    private GameObject playerInventory;
     private GameState gameState;
 
     // Start is called before the first frame update
@@ -18,12 +20,14 @@ public class GameManager : MonoBehaviour
             Instance = this;
 
         canvas = GameObject.Find("Canvas");
+        enemies = GameObject.FindGameObjectsWithTag("Enemy");
+        playerInventory = GameObject.Find("ItemsSelectionPanel");
+
     }
 
     // Update is called once per frame
     void Update()
     {
-
     }
 
     public void OnChangeGameState(GameState newGameState)
@@ -49,8 +53,21 @@ public class GameManager : MonoBehaviour
                 canvas.GetComponentInChildren<InventoryManager>().ConfirmSelection();
                 break;
         }
-        
+    }
 
+    public void EnemyEliminated()
+    {
+        foreach (GameObject enemy in enemies)
+        {
+            if(enemy != null)
+            {
+                if (enemy.GetComponent<Enemy>().health == 0)
+                {
+                    //playerInventory.GetComponentInChildren<InventoryManager>().AddItem();
+                    Destroy(enemy);
+                }
+            }
+        }
     }
 
     private void ShowToggleInventory()
@@ -58,6 +75,7 @@ public class GameManager : MonoBehaviour
         //so call method inside InventoryManager.cs to toggle the inventory window's animation
         canvas.GetComponentInChildren<InventoryManager>().ShowToggleInventory();
     }
+
 
     //my game consists of two areas. AreaA (PlayArea) and AreaB (SafeZone)
     public enum GameState

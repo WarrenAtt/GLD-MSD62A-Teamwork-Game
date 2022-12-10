@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.SceneManagement;
 
 public class Enemy : MonoBehaviour
 {
@@ -10,9 +11,11 @@ public class Enemy : MonoBehaviour
     public int health = 10;
 
     private List<GameObject> _waypoints;
+    private GameObject _player;
     private NavMeshAgent _agent;
     private Animator _animator;
     private Vector3 destination;
+
 
     // Start is called before the first frame update
     void Start()
@@ -20,32 +23,44 @@ public class Enemy : MonoBehaviour
         _agent = GetComponent<NavMeshAgent>();
         _animator = GetComponent<Animator>();
         _waypoints = new List<GameObject>();
+        _player = GameObject.FindGameObjectWithTag("Player");
 
         foreach (GameObject wp in GameObject.FindGameObjectsWithTag("Waypoint"))
         {
             _waypoints.Add(wp);
         }
 
-        //destination = GameObject.FindGameObjectWithTag("Waypoint").transform.position;
-        MoveToNextDestination();
+        if (SceneManager.GetActiveScene().name == "Level2")
+        {
+            MoveToWaypoint();
+        }
 
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(health <= 0)
+        if (SceneManager.GetActiveScene().name == "Level1")
         {
-            Destroy(this.gameObject);
+            if (_agent.remainingDistance <= 0.5f && _agent.isStopped == false)
+            {
+                _agent.isStopped = true;
+                _animator.SetBool("Walking", false);
+                MoveToPlayer();
+            }
         }
 
-
-        if (_agent.remainingDistance <= 0.5f && _agent.isStopped == false)
+        if (SceneManager.GetActiveScene().name == "Level2")
         {
-            _agent.isStopped = true;
-            _animator.SetBool("Walking", false);
-            StartCoroutine(WaitTimer(2, MoveToNextDestination));
+            if (_agent.remainingDistance <= 0.5f && _agent.isStopped == false)
+            {
+                _agent.isStopped = true;
+                _animator.SetBool("Walking", false);
+                StartCoroutine(WaitTimer(2, MoveToWaypoint));
+            }
         }
+
+        GameManager.Instance.EnemyEliminated();
         
     }
 
@@ -54,7 +69,7 @@ public class Enemy : MonoBehaviour
         health -= 1;
     }
 
-    private void MoveToNextDestination()
+    private void MoveToWaypoint()
     {
         List<GameObject> tempWaypoints = new List<GameObject>();
 
@@ -72,19 +87,40 @@ public class Enemy : MonoBehaviour
             destination = tempWaypoints[UnityEngine.Random.Range(0, tempWaypoints.Count)].transform.position;
         }
 
-        print(destination.ToString());
+        _animator.SetBool("Walking", true);
+        _agent.isStopped = false;
+
+        _agent.SetDestination(destination);
+    }
+
+    private void MoveToPlayer()
+    {
+        if(_player != null)
+        {
+            destination = _player.transform.position;
+        }
+        else{
+            MoveToWaypoint();
+        }
 
         _animator.SetBool("Walking", true);
         _agent.isStopped = false;
 
         _agent.SetDestination(destination);
-
-
     }
 
     private IEnumerator WaitTimer(float time, Action callback)
     {
         yield return new WaitForSeconds(time);
         callback();
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if(collision.gameObject.name == _player.name)
+        {
+            print("PLayer is Hit");
+            _player.GetComponent<Player>().ReduceHealth();
+        }
     }
 }

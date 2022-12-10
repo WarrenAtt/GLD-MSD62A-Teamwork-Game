@@ -22,7 +22,7 @@ public class InventoryManager : MonoBehaviour
     [Tooltip("Not Selected Item Colour")]
     public Color notSelectedColour;
 
-    private List<InventoryItem> itemsForPlayer; //the items visible to the player during the game
+    public List<InventoryItem> itemsForPlayer; //the items visible to the player during the game
 
     public int currentSelectedIndex = 0; //by default start/select the first button in the inventory system
 
@@ -31,6 +31,7 @@ public class InventoryManager : MonoBehaviour
     [Tooltip("Show Inventory GUI")]
     public bool showInventory = false;
 
+    public static InventoryManager inventoryManager = null;
 
     // Start is called before the first frame update
     void Start()
@@ -103,7 +104,7 @@ public class InventoryManager : MonoBehaviour
     /// during the game. The total number of inventory items cannot exceed
     /// the number set in the variable numberOfItems.
     /// </summary>
-    private void PopulateInventorySpawn()
+    public void PopulateInventorySpawn()
     {
         for (int i = 0; i < numberOfItems; i++)
         {
@@ -126,10 +127,12 @@ public class InventoryManager : MonoBehaviour
                 //increase the quantity by 1
                 item.quantity += 1;
             }
+
+
+            print("Item: " + objItem.name + " added!");
         }
 
         print("Number of Inventory Items for Player:" + itemsForPlayer.Count);
-
     }
 
     private void RefreshInventoryGUI()
