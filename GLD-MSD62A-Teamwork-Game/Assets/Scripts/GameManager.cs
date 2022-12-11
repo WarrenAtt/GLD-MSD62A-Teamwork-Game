@@ -61,9 +61,8 @@ public class GameManager : MonoBehaviour
         {
             if(enemy != null)
             {
-                if (enemy.GetComponent<Enemy>().health == 0)
+                if (enemy.GetComponent<Enemy>().health == 0f)
                 {
-                    //playerInventory.GetComponentInChildren<InventoryManager>().AddItem();
                     Destroy(enemy);
                 }
             }

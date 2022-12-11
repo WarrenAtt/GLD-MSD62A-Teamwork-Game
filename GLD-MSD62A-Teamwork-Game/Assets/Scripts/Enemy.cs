@@ -4,17 +4,19 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class Enemy : MonoBehaviour
 {
     [SerializeField]
-    public int health = 10;
-
+    public float health;
+    private float maxHealth;
     private List<GameObject> _waypoints;
     private GameObject _player;
     private NavMeshAgent _agent;
     private Animator _animator;
     private Vector3 destination;
+    private Slider _healthBar;
 
 
     // Start is called before the first frame update
@@ -24,6 +26,21 @@ public class Enemy : MonoBehaviour
         _animator = GetComponent<Animator>();
         _waypoints = new List<GameObject>();
         _player = GameObject.FindGameObjectWithTag("Player");
+
+        _healthBar = GameObject.Find("EnemyHealthBar").GetComponent<Slider>();
+
+        if(this.gameObject.name == "Boss")
+        {
+            health = 300f;
+        }
+        else
+        {
+            health = 100f;
+        }
+
+        maxHealth = health;
+
+        _healthBar.value = CalculateHealth();
 
         foreach (GameObject wp in GameObject.FindGameObjectsWithTag("Waypoint"))
         {
@@ -45,7 +62,7 @@ public class Enemy : MonoBehaviour
             if (_agent.remainingDistance <= 0.5f && _agent.isStopped == false)
             {
                 _agent.isStopped = true;
-                _animator.SetBool("Walking", false);
+                _animator.SetBool("isWalking", false);
                 MoveToPlayer();
             }
         }
@@ -55,18 +72,25 @@ public class Enemy : MonoBehaviour
             if (_agent.remainingDistance <= 0.5f && _agent.isStopped == false)
             {
                 _agent.isStopped = true;
-                _animator.SetBool("Walking", false);
+                _animator.SetBool("isWalking", false);
                 StartCoroutine(WaitTimer(2, MoveToWaypoint));
             }
         }
+
+        _healthBar.value = CalculateHealth();
 
         GameManager.Instance.EnemyEliminated();
         
     }
 
+    private float CalculateHealth()
+    {
+        return health / maxHealth;
+    }
+
     public void ReduceHealth()
     {
-        health -= 1;
+        health -= 10f;
     }
 
     private void MoveToWaypoint()
@@ -87,7 +111,7 @@ public class Enemy : MonoBehaviour
             destination = tempWaypoints[UnityEngine.Random.Range(0, tempWaypoints.Count)].transform.position;
         }
 
-        _animator.SetBool("Walking", true);
+        _animator.SetBool("isWalking", true);
         _agent.isStopped = false;
 
         _agent.SetDestination(destination);
@@ -103,7 +127,7 @@ public class Enemy : MonoBehaviour
             MoveToWaypoint();
         }
 
-        _animator.SetBool("Walking", true);
+        _animator.SetBool("isWalking", true);
         _agent.isStopped = false;
 
         _agent.SetDestination(destination);
@@ -113,14 +137,5 @@ public class Enemy : MonoBehaviour
     {
         yield return new WaitForSeconds(time);
         callback();
-    }
-
-    private void OnCollisionEnter(Collision collision)
-    {
-        if(collision.gameObject.name == _player.name)
-        {
-            print("PLayer is Hit");
-            _player.GetComponent<Player>().ReduceHealth();
-        }
     }
 }
