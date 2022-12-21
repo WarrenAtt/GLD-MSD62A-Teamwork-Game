@@ -6,7 +6,6 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance = null;
     private GameObject canvas;
-    private GameObject[] enemies;
     private GameObject playerInventory;
     private GameState gameState;
 
@@ -20,7 +19,6 @@ public class GameManager : MonoBehaviour
             Instance = this;
 
         canvas = GameObject.Find("Canvas");
-        enemies = GameObject.FindGameObjectsWithTag("Enemy");
         playerInventory = GameObject.Find("ItemsSelectionPanel");
 
     }
@@ -32,7 +30,7 @@ public class GameManager : MonoBehaviour
 
     public void OnChangeGameState(GameState newGameState)
     {
-        print("Changing game state to:" + newGameState.ToString());
+        //print("Changing game state to:" + newGameState.ToString());
         gameState = newGameState;
     }
 
@@ -55,24 +53,11 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void EnemyEliminated()
-    {
-        foreach (GameObject enemy in enemies)
-        {
-            if(enemy != null)
-            {
-                if (enemy.GetComponent<Enemy>().health == 0f)
-                {
-                    Destroy(enemy);
-                }
-            }
-        }
-    }
-
     private void ShowToggleInventory()
     {
         //so call method inside InventoryManager.cs to toggle the inventory window's animation
         canvas.GetComponentInChildren<InventoryManager>().ShowToggleInventory();
+
     }
 
 

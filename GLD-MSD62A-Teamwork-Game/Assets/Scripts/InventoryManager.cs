@@ -31,7 +31,8 @@ public class InventoryManager : MonoBehaviour
     [Tooltip("Show Inventory GUI")]
     public bool showInventory = false;
 
-    public static InventoryManager inventoryManager = null;
+    private int _buttonID = 0;
+
 
     // Start is called before the first frame update
     void Start()
@@ -127,12 +128,30 @@ public class InventoryManager : MonoBehaviour
                 //increase the quantity by 1
                 item.quantity += 1;
             }
-
-
-            print("Item: " + objItem.name + " added!");
         }
+    }
 
-        print("Number of Inventory Items for Player:" + itemsForPlayer.Count);
+    public void AddItemToInventory(ItemScriptableObject addedItem)
+    {
+        int countItems = itemsForPlayer.Where(x => x.item == addedItem).ToList().Count;
+
+        if(countItems == 0)
+        {
+            itemsForPlayer.Add(new InventoryItem() { item = addedItem, quantity = 1 });
+
+            itemsSelectionPanel.transform.Find("Button" + _buttonID).gameObject.SetActive(true);
+
+            print(addedItem);
+        }
+        else
+        {
+            //search for the element of the same type inside itemsForPlayer
+            var item = itemsForPlayer.First(x => x.item == addedItem);
+            //increase the quantity by 1
+            item.quantity += 1;
+        }
+        
+        RefreshInventoryGUI();
     }
 
     private void RefreshInventoryGUI()
@@ -142,7 +161,14 @@ public class InventoryManager : MonoBehaviour
         foreach (InventoryItem i in itemsForPlayer)
         {
             //load the button
-            GameObject button = itemsSelectionPanel.transform.Find("Button" + buttonId).gameObject;
+            //GameObject button = itemsSelectionPanel.transform.Find("Button" + buttonId).gameObject;
+            Transform button = itemsSelectionPanel.transform.Find("Button" + buttonId);
+
+            if(button == null)
+            {
+                itemsSelectionPanel.transform.Find("Button" + buttonId).gameObject.SetActive(true);
+                button = itemsSelectionPanel.transform.Find("Button" + buttonId);
+            }
 
             //search for the child image and change the sprite of the item
             button.transform.Find("Image").GetComponent<Image>().sprite = i.item.icon;
@@ -164,6 +190,7 @@ public class InventoryManager : MonoBehaviour
             }
 
             buttonId += 1;
+            _buttonID = buttonId;
 
         }
 
@@ -171,6 +198,7 @@ public class InventoryManager : MonoBehaviour
         for (int i = buttonId; i < 3; i++)
         {
             itemsSelectionPanel.transform.Find("Button" + i).gameObject.SetActive(false);
+            
         }
 
     }

@@ -10,14 +10,13 @@ public class Enemy : MonoBehaviour
 {
     [SerializeField]
     public float health;
+    public Slider _healthBar;
     private float maxHealth;
     private List<GameObject> _waypoints;
     private GameObject _player;
     private NavMeshAgent _agent;
     private Animator _animator;
     private Vector3 destination;
-    private Slider _healthBar;
-
 
     // Start is called before the first frame update
     void Start()
@@ -26,8 +25,6 @@ public class Enemy : MonoBehaviour
         _animator = GetComponent<Animator>();
         _waypoints = new List<GameObject>();
         _player = GameObject.FindGameObjectWithTag("Player");
-
-        _healthBar = GameObject.Find("EnemyHealthBar").GetComponent<Slider>();
 
         if(this.gameObject.name == "Boss")
         {
@@ -77,10 +74,20 @@ public class Enemy : MonoBehaviour
             }
         }
 
-        _healthBar.value = CalculateHealth();
+        _healthBar.value = health / maxHealth;
 
-        GameManager.Instance.EnemyEliminated();
+        if (health <= 0f)
+        {
+            Destroy(gameObject);
+
+            InventoryManager InventoryManager = GameObject.Find("CanvasScript").GetComponent<InventoryManager>();
+
+            ItemScriptableObject objItem = InventoryManager.itemsAvailable[UnityEngine.Random.Range(0, InventoryManager.itemsAvailable.Count)];
+
+            InventoryManager.AddItemToInventory(objItem);
+        }
         
+
     }
 
     private float CalculateHealth()
@@ -90,7 +97,7 @@ public class Enemy : MonoBehaviour
 
     public void ReduceHealth()
     {
-        health -= 10f;
+        health -= 30f;
     }
 
     private void MoveToWaypoint()

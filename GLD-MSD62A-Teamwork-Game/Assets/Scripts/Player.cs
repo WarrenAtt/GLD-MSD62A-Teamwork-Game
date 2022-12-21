@@ -10,13 +10,18 @@ public class Player : MonoBehaviour
     private float maxHealth;
     private Image healthBar;
 
+    public GameObject Door;
+    public Text MoneyText;
+
     // Start is called before the first frame update
     void Start()
     {
         maxHealth = health;
-        healthBar = GameObject.FindGameObjectWithTag("HealthBar").GetComponent<Image>();
+        healthBar = GameObject.Find("HealthBar").GetComponent<Image>();
 
         healthBar.fillAmount = CalculateHealth();
+
+        MoneyText.text = "Score: $" + GameData.Money.ToString();
     }
 
     // Update is called once per frame
@@ -28,6 +33,8 @@ public class Player : MonoBehaviour
         {
             Destroy(this.gameObject);
         }
+
+        MoneyText.text = "Score: $" + GameData.Money.ToString();
     }
 
     public void ReduceHealth()
@@ -45,6 +52,29 @@ public class Player : MonoBehaviour
         if(other.gameObject.name == "EnemyHitbox")
         {
             ReduceHealth();
+        }
+
+        if(other.gameObject.name == Door.gameObject.name)
+        {
+            Door.GetComponent<Animator>().SetBool("isOpen", true);
+        }
+
+        if (other.gameObject.name == "SafehouseFloor")
+        {
+            GameManager.Instance.OnChangeGameState(GameManager.GameState.AreaA);
+        }
+
+        if (other.gameObject.name == "ArenaFloor")
+        {
+            GameManager.Instance.OnChangeGameState(GameManager.GameState.AreaB);
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.gameObject.name == Door.gameObject.name)
+        {
+            Door.GetComponent<Animator>().SetBool("isOpen", false);
         }
     }
 }
