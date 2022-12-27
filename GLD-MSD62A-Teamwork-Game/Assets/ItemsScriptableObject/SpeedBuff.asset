@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 93061498d8fa64cd3a159fadbad5f581, type: 3}
-  m_Name: Ammo
+  m_Name: SpeedBuff
   m_EditorClassIdentifier: 
-  title: Ammo
-  icon: {fileID: 21300000, guid: 364206cb355dcf7479b2cdec20b8ec68, type: 3}
-  increaseValue: 31
+  title: SpeedBuff
+  icon: {fileID: 21300000, guid: 25887e1e767bc774e9a24997a9343056, type: 3}
+  increaseValue: 2
   type: 2

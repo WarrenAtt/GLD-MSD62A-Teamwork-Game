@@ -8,9 +8,11 @@ using UnityEngine.UI;
 
 public class Enemy : MonoBehaviour
 {
+    [Header("Health")]
     [SerializeField]
-    public float health;
-    public Slider _healthBar;
+    public float Health;
+    public Slider HealthBar;
+
     private float maxHealth;
     private List<GameObject> _waypoints;
     private GameObject _player;
@@ -28,16 +30,16 @@ public class Enemy : MonoBehaviour
 
         if(this.gameObject.name == "Boss")
         {
-            health = 300f;
+            Health = 300f;
         }
         else
         {
-            health = 100f;
+            Health = 100f;
         }
 
-        maxHealth = health;
+        maxHealth = Health;
 
-        _healthBar.value = CalculateHealth();
+        HealthBar.value = CalculateHealth();
 
         foreach (GameObject wp in GameObject.FindGameObjectsWithTag("Waypoint"))
         {
@@ -74,9 +76,9 @@ public class Enemy : MonoBehaviour
             }
         }
 
-        _healthBar.value = health / maxHealth;
+        HealthBar.value = Health / maxHealth;
 
-        if (health <= 0f)
+        if (Health <= 0f)
         {
             Destroy(gameObject);
 
@@ -92,12 +94,12 @@ public class Enemy : MonoBehaviour
 
     private float CalculateHealth()
     {
-        return health / maxHealth;
+        return Health / maxHealth;
     }
 
     public void ReduceHealth()
     {
-        health -= 30f;
+        Health -= 30f;
     }
 
     private void MoveToWaypoint()
@@ -126,7 +128,7 @@ public class Enemy : MonoBehaviour
 
     private void MoveToPlayer()
     {
-        if(_player != null)
+        if(_player != null && GameManager.Instance.GetCurrentGameState() == GameManager.GameState.Arena)
         {
             destination = _player.transform.position;
         }

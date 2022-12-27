@@ -1,21 +1,28 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
+    [Header("Unity Setup")]
+    public List<GameObject> Doors;
+    public Text MoneyText;
+
+    [Header("Health")]
     [SerializeField]
     public float health = 100f;
     private float maxHealth;
     private Image healthBar;
 
-    public GameObject Door;
-    public Text MoneyText;
+    private GameObject canvas;
 
     // Start is called before the first frame update
     void Start()
     {
+        canvas = GameObject.Find("Canvas");
+
         maxHealth = health;
         healthBar = GameObject.Find("HealthBar").GetComponent<Image>();
 
@@ -37,6 +44,21 @@ public class Player : MonoBehaviour
         MoneyText.text = "Score: $" + GameData.Money.ToString();
     }
 
+    public void ApplyHealthPotion()
+    {
+        health += 25f;
+    }
+
+    public void ApplyShieldPotion()
+    {
+        //Shield Method
+    }
+
+    public void ApplySpeedPotion()
+    {
+
+    }
+
     public void ReduceHealth()
     {
         health -= 10f;
@@ -54,27 +76,49 @@ public class Player : MonoBehaviour
             ReduceHealth();
         }
 
-        if(other.gameObject.name == Door.gameObject.name)
+        foreach(GameObject Door in Doors)
         {
-            Door.GetComponent<Animator>().SetBool("isOpen", true);
+            if(other.gameObject == Door)
+            {
+                Door.GetComponent<Animator>().SetBool("isOpen", true);
+            }
         }
 
         if (other.gameObject.name == "SafehouseFloor")
         {
-            GameManager.Instance.OnChangeGameState(GameManager.GameState.AreaA);
+            GameManager.Instance.OnChangeGameState(GameManager.GameState.Safehouse);
         }
 
         if (other.gameObject.name == "ArenaFloor")
         {
-            GameManager.Instance.OnChangeGameState(GameManager.GameState.AreaB);
+            GameManager.Instance.OnChangeGameState(GameManager.GameState.Arena);
         }
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.gameObject.name == Door.gameObject.name)
+        foreach (GameObject Door in Doors)
         {
-            Door.GetComponent<Animator>().SetBool("isOpen", false);
+            if (other.gameObject == Door)
+            {
+                Door.GetComponent<Animator>().SetBool("isOpen", false);
+            }
+        }
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject == GameManager.Instance.NextLevelPortal)
+        {
+            if (GameManager.Instance.GetCurrentLevel() == "Level1")
+            {
+                SceneManager.LoadScene("Level2");
+            }
+
+            if (GameManager.Instance.GetCurrentLevel() == "Level2")
+            {
+                SceneManager.LoadScene("Level3");
+            }
         }
     }
 }

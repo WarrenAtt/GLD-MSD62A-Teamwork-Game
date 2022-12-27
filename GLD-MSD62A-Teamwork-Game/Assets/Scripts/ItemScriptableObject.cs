@@ -15,6 +15,6 @@ public class ItemScriptableObject : ScriptableObject
     {
         Health,
         Shield,
-        Ammo
+        Speed
     }
 }
