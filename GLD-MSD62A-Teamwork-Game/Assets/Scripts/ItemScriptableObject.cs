@@ -8,6 +8,7 @@ public class ItemScriptableObject : ScriptableObject
     public string title;
     public Sprite icon;
     public int increaseValue;
+    public int cost;
     public Type type; //stores either health or mana (not both at the same time)
 
 

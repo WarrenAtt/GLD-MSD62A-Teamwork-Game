@@ -8,11 +8,4 @@ public static class GameData
         set { _money = value; }
     }
 
-    private static int _invetoryAmmo;
-
-    public static int InventoryAmmo
-    {
-        get { return _invetoryAmmo; }
-        set { _invetoryAmmo = value; }
-    }
 }

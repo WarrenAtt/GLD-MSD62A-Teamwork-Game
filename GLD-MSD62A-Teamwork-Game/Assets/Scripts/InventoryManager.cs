@@ -1,9 +1,8 @@
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using System.Linq;
-using UnityEngine.UI;
 using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
 
 public class InventoryManager : MonoBehaviour
 {
@@ -28,7 +27,8 @@ public class InventoryManager : MonoBehaviour
     [Tooltip("List of items")]
     public List<ItemScriptableObject> itemsAvailable;
 
-    public int currentSelectedIndex = 0; //by default start/select the first button in the inventory system
+    public int currentSelectedInventoryItem = 0; //by default start/select the first button in the inventory system
+    public int currentSelectedShopItem = 0;
 
     private Animator animator;
 
@@ -59,16 +59,14 @@ public class InventoryManager : MonoBehaviour
     {
         if (GameManager.Instance.GetCurrentGameState() == GameManager.GameState.Arena)
         {
-            //itemsSelectionPanel.SetActive(true);
-            //shopSelectionPanel.SetActive(false);
+
             //load the controller so that we can play the animations (inventoryIn/inventoryOut)
             animator = itemsSelectionPanel.GetComponent<Animator>();
         }
 
         if (GameManager.Instance.GetCurrentGameState() == GameManager.GameState.Safehouse)
         {
-            //itemsSelectionPanel.SetActive(false);
-            //shopSelectionPanel.SetActive(true);
+
             animator = shopSelectionPanel.GetComponent<Animator>();
         }
     }
@@ -96,7 +94,7 @@ public class InventoryManager : MonoBehaviour
             if (itemsForPlayer.Count != 0)
             {
                 //get the item from the itemsForPlayer list using the currentSelectedIndex
-                InventoryItem inventoryItem = itemsForPlayer[currentSelectedIndex];
+                InventoryItem inventoryItem = itemsForPlayer[currentSelectedInventoryItem];
                 //print("Item Selected is:" + inventoryItem.item.name);
 
                 //reduce the quantity by 1
@@ -123,8 +121,8 @@ public class InventoryManager : MonoBehaviour
                 //check if the quantity is 0, if it is we need to remove this item from the itemsForPlayer list
                 if (inventoryItem.quantity == 0)
                 {
-                    itemsForPlayer.RemoveAt(currentSelectedIndex);
-                    currentSelectedIndex = 0;
+                    itemsForPlayer.RemoveAt(currentSelectedInventoryItem);
+                    currentSelectedInventoryItem = 0;
                 }
             }
 
@@ -136,32 +134,38 @@ public class InventoryManager : MonoBehaviour
             if (itemsForShop.Count != 0)
             {
                 //get the item from the itemsForPlayer list using the currentSelectedIndex
-                InventoryItem inventoryItem = itemsForShop[currentSelectedIndex];
+                InventoryItem inventoryItem = itemsForShop[currentSelectedShopItem];
+
                 //print("Item Selected is:" + inventoryItem.item.name);
 
-                //reduce the quantity by 1
-                inventoryItem.quantity -= 1;
-
-                if (inventoryItem.item.type == ItemScriptableObject.Type.Health)
+                if(GameData.Money >= inventoryItem.item.cost)
                 {
-                    AddItemToInventory(itemsAvailable[0]);
-                }
+                    //reduce the quantity by 1
+                    inventoryItem.quantity -= 1;
 
-                if (inventoryItem.item.type == ItemScriptableObject.Type.Shield)
-                {
-                    AddItemToInventory(itemsAvailable[1]);
-                }
+                    if (inventoryItem.item.type == ItemScriptableObject.Type.Health)
+                    {
+                        AddItemToInventory(itemsAvailable[0]);
+                    }
 
-                if (inventoryItem.item.type == ItemScriptableObject.Type.Speed)
-                {
-                    AddItemToInventory(itemsAvailable[2]);
+                    if (inventoryItem.item.type == ItemScriptableObject.Type.Shield)
+                    {
+                        AddItemToInventory(itemsAvailable[1]);
+                    }
+
+                    if (inventoryItem.item.type == ItemScriptableObject.Type.Speed)
+                    {
+                        AddItemToInventory(itemsAvailable[2]);
+                    }
+
+                    GameData.Money -= inventoryItem.item.cost;
                 }
 
                 //check if the quantity is 0, if it is we need to remove this item from the itemsForPlayer list
                 if (inventoryItem.quantity == 0)
                 {
-                    itemsForShop.RemoveAt(currentSelectedIndex);
-                    currentSelectedIndex = 0;
+                    itemsForShop.RemoveAt(currentSelectedShopItem);
+                    currentSelectedShopItem = 0;
                 }
             }
 
@@ -171,17 +175,36 @@ public class InventoryManager : MonoBehaviour
 
     public void ChangeSelection(bool moveLeft)
     {
-        if (moveLeft == true)
-            currentSelectedIndex -= 1;
-        else
-            currentSelectedIndex += 1;
+        if (GameManager.Instance.GetCurrentGameState() == GameManager.GameState.Arena)
+        {
+            if (moveLeft == true)
+                currentSelectedInventoryItem -= 1;
+            else
+                currentSelectedInventoryItem += 1;
 
-        //check boundaries
-        if (currentSelectedIndex < 0)
-            currentSelectedIndex = 0;
+            //check boundaries
+            if (currentSelectedInventoryItem < 0)
+                currentSelectedInventoryItem = 0;
 
-        if (currentSelectedIndex == itemsForPlayer.Count || currentSelectedIndex == itemsForShop.Count)
-            currentSelectedIndex = currentSelectedIndex - 1;
+            if (currentSelectedInventoryItem == itemsForPlayer.Count)
+                currentSelectedInventoryItem = currentSelectedInventoryItem - 1;
+        }
+
+        if (GameManager.Instance.GetCurrentGameState() == GameManager.GameState.Safehouse)
+        {
+            if (moveLeft == true)
+                currentSelectedShopItem -= 1;
+            else
+                currentSelectedShopItem += 1;
+
+            //check boundaries
+            if (currentSelectedShopItem < 0)
+                currentSelectedShopItem = 0;
+
+            if (currentSelectedShopItem == itemsForShop.Count)
+                currentSelectedShopItem = currentSelectedShopItem - 1;
+        }
+
 
         RefreshInventoryGUI();
     }
@@ -247,7 +270,7 @@ public class InventoryManager : MonoBehaviour
     {
         int countItems = itemsForPlayer.Where(x => x.item == addedItem).ToList().Count;
 
-        if (itemsSelectionPanel.transform.Find("Button0").gameObject.active == false)
+        if (itemsSelectionPanel.transform.Find("Button0").gameObject.activeSelf == false)
         {
             _buttonID = 0;
         }
@@ -262,8 +285,6 @@ public class InventoryManager : MonoBehaviour
             {
                 button.SetActive(true);
             }
-
-            print(addedItem);
         }
         else
         {
@@ -278,7 +299,8 @@ public class InventoryManager : MonoBehaviour
 
     public void RefreshInventoryGUI()
     {
-        int buttonId = 0;
+        int inventoryButtonId = 0;
+        int shopButtonId = 0;
 
         if (GameManager.Instance.GetCurrentGameState() == GameManager.GameState.Arena)
         {
@@ -286,12 +308,12 @@ public class InventoryManager : MonoBehaviour
             {
                 //load the button
                 //GameObject button = itemsSelectionPanel.transform.Find("Button" + buttonId).gameObject;
-                button = itemsSelectionPanel.transform.Find("Button" + buttonId);
+                button = itemsSelectionPanel.transform.Find("Button" + inventoryButtonId);
 
                 if (button == null)
                 {
-                    itemsSelectionPanel.transform.Find("Button" + buttonId).gameObject.SetActive(true);
-                    button = itemsSelectionPanel.transform.Find("Button" + buttonId);
+                    itemsSelectionPanel.transform.Find("Button" + inventoryButtonId).gameObject.SetActive(true);
+                    button = itemsSelectionPanel.transform.Find("Button" + inventoryButtonId);
                 }
 
                 //search for the child image and change the sprite of the item
@@ -304,7 +326,7 @@ public class InventoryManager : MonoBehaviour
                 button.transform.Find("Quantity").GetComponent<TextMeshProUGUI>().text = "x" + i.quantity;
 
                 //show selected/not selected colour based on buttonId and currentSelectedIndex
-                if (buttonId == currentSelectedIndex)
+                if (inventoryButtonId == currentSelectedInventoryItem)
                 {
                     button.GetComponent<Image>().color = selectedColour;
                 }
@@ -313,15 +335,46 @@ public class InventoryManager : MonoBehaviour
                     button.GetComponent<Image>().color = notSelectedColour;
                 }
 
-                buttonId += 1;
+                inventoryButtonId += 1;
 
             }
+
+            //this section will check for redudent buttons and deactivate them if necisccary.
+            //whilst implementing this feature we found an issue with the button id that is why we hard coded this section
+            if(inventoryButtonId < 3)
+            {
+                itemsSelectionPanel.transform.Find("Button2").gameObject.SetActive(false);
+            }
+            else
+            {
+                itemsSelectionPanel.transform.Find("Button2").gameObject.SetActive(true);
+            }
+
+            if (inventoryButtonId < 2)
+            {
+                itemsSelectionPanel.transform.Find("Button1").gameObject.SetActive(false);
+            }
+            else
+            {
+                itemsSelectionPanel.transform.Find("Button1").gameObject.SetActive(true);
+            }
+
+            if (inventoryButtonId < 1)
+            {
+                itemsSelectionPanel.transform.Find("Button0").gameObject.SetActive(false);
+            }
+            else
+            {
+                itemsSelectionPanel.transform.Find("Button0").gameObject.SetActive(true);
+            }
+
+            //this below code was the one we tried using but did not work in this section.
 
             //set active false redundant buttons
-            for (int i = buttonId; i < 3; i++)
-            {
-                itemsSelectionPanel.transform.Find("Button" + i).gameObject.SetActive(false);
-            }
+            //for (int i = inventoryButtonId; i < 3; i++)
+            //{
+            //    itemsSelectionPanel.transform.Find("Button" + i).gameObject.SetActive(false);
+            //}
         }
 
         if (GameManager.Instance.GetCurrentGameState() == GameManager.GameState.Safehouse)
@@ -330,12 +383,12 @@ public class InventoryManager : MonoBehaviour
             {
                 //load the button
                 //GameObject button = itemsSelectionPanel.transform.Find("Button" + buttonId).gameObject;
-                button = shopSelectionPanel.transform.Find("Button" + buttonId);
+                button = shopSelectionPanel.transform.Find("Button" + shopButtonId);
 
                 if (button == null)
                 {
-                    shopSelectionPanel.transform.Find("Button" + buttonId).gameObject.SetActive(true);
-                    button = shopSelectionPanel.transform.Find("Button" + buttonId);
+                    shopSelectionPanel.transform.Find("Button" + shopButtonId).gameObject.SetActive(true);
+                    button = shopSelectionPanel.transform.Find("Button" + shopButtonId);
                 }
 
                 //search for the child image and change the sprite of the item
@@ -347,8 +400,10 @@ public class InventoryManager : MonoBehaviour
                 //change the quantity of the item
                 button.transform.Find("Quantity").GetComponent<TextMeshProUGUI>().text = "x" + i.quantity;
 
+                button.transform.Find("Cost").GetComponent<TextMeshProUGUI>().text = "$" + i.item.cost;
+
                 //show selected/not selected colour based on buttonId and currentSelectedIndex
-                if (buttonId == currentSelectedIndex)
+                if (shopButtonId == currentSelectedShopItem)
                 {
                     button.GetComponent<Image>().color = selectedColour;
                 }
@@ -357,24 +412,17 @@ public class InventoryManager : MonoBehaviour
                     button.GetComponent<Image>().color = notSelectedColour;
                 }
 
-                buttonId += 1;
-                _buttonID = buttonId;
+                shopButtonId += 1;
+                //_buttonID = inventoryButtonId - 1;
 
             }
 
             //set active false redundant buttons
-            for (int i = buttonId; i < 3; i++)
+            for (int i = shopButtonId; i < 3; i++)
             {
                 shopSelectionPanel.transform.Find("Button" + i).gameObject.SetActive(false);
             }
         }
-
-        for (int i = 0; i < itemsForPlayer.Count; i++)
-        {
-            print(itemsForPlayer[i].item);
-        }
-
-        print("Button Id: " + _buttonID);
     }
 
     public class InventoryItem

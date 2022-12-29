@@ -8,8 +8,10 @@ public class GameManager : MonoBehaviour
     [Header("Unity Setup")]
     public static GameManager Instance = null;
     public GameObject NextLevelPortal;
+    public float timePlayed;
+    private GameObject Player;
+    private List<GameObject> Enemies;
     private GameObject canvas;
-    private GameObject playerInventory;
     private GameState gameState;
 
     // Start is called before the first frame update
@@ -22,13 +24,8 @@ public class GameManager : MonoBehaviour
             Instance = this;
 
         canvas = GameObject.Find("Canvas");
-        playerInventory = GameObject.Find("ItemsSelectionPanel");
+        Player = GameObject.Find("Player");
 
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
     }
 
     public void OnChangeGameState(GameState newGameState)
@@ -50,15 +47,61 @@ public class GameManager : MonoBehaviour
                 ShowToggleMenu();
                 break;
             case "K":
-                canvas.GetComponentInChildren<InventoryManager>().ChangeSelection(false);
+                if(canvas.GetComponentInChildren<InventoryManager>().showMenu == true)
+                    canvas.GetComponentInChildren<InventoryManager>().ChangeSelection(false);
                 break;
             case "J":
-                canvas.GetComponentInChildren<InventoryManager>().ChangeSelection(true);
+                if (canvas.GetComponentInChildren<InventoryManager>().showMenu == true)
+                {
+                    canvas.GetComponentInChildren<InventoryManager>().ChangeSelection(true);
+                }
+                else
+                {
+                    Player.GetComponent<Player>().ToggleObjectives();
+                }
+                
                 break;
             case "RETURN":
-                canvas.GetComponentInChildren<InventoryManager>().ConfirmSelection();
+                if (canvas.GetComponentInChildren<InventoryManager>().showMenu == true)
+                    canvas.GetComponentInChildren<InventoryManager>().ConfirmSelection();
                 break;
         }
+    }
+
+    public float GetTotalEnemies()
+    {
+        Enemies = new List<GameObject>();
+
+        foreach (GameObject enemy in GameObject.FindGameObjectsWithTag("Enemy"))
+        {
+            if (!Enemies.Contains(enemy))
+            {
+                Enemies.Add(enemy);
+            }
+        }
+
+        return Enemies.Count;
+    }
+
+    public bool GetBossStatus()
+    {
+        GameObject boss = GameObject.FindGameObjectWithTag("Boss");
+
+        if (boss != null && boss.activeSelf == true)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    public float GetTotalTimePlayed()
+    {
+        timePlayed += Time.deltaTime;
+
+        return timePlayed;
     }
 
     private void ShowToggleMenu()

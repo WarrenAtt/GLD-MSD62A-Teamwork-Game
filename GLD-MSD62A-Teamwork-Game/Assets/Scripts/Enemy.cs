@@ -8,11 +8,11 @@ using UnityEngine.UI;
 
 public class Enemy : MonoBehaviour
 {
-    [Header("Health")]
+    [Header("Enemy Properties")]
     [SerializeField]
     public float Health;
     public Slider HealthBar;
-
+    
     private float maxHealth;
     private List<GameObject> _waypoints;
     private GameObject _player;
@@ -45,6 +45,8 @@ public class Enemy : MonoBehaviour
         {
             _waypoints.Add(wp);
         }
+
+        
 
         if (SceneManager.GetActiveScene().name == "Level2")
         {

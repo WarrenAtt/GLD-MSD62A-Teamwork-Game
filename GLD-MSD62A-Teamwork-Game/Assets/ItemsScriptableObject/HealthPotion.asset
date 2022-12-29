@@ -15,4 +15,5 @@ MonoBehaviour:
   title: BasicHealth
   icon: {fileID: 21300000, guid: ce50aad6a43cd4afd918637757db7353, type: 3}
   increaseValue: 10
+  cost: 250
   type: 0

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -9,6 +10,8 @@ public class Player : MonoBehaviour
     [Header("Unity Setup")]
     public List<GameObject> Doors;
     public Text MoneyText;
+    public GameObject ObjectiveMenu;
+    public float EnemiesSpawned;
 
     [Header("Health")]
     [SerializeField]
@@ -16,19 +19,22 @@ public class Player : MonoBehaviour
     private float maxHealth;
     private Image healthBar;
 
-    private GameObject canvas;
+    private bool showObjectives = false;
+    private Animator animator;
 
     // Start is called before the first frame update
     void Start()
     {
-        canvas = GameObject.Find("Canvas");
-
         maxHealth = health;
         healthBar = GameObject.Find("HealthBar").GetComponent<Image>();
 
         healthBar.fillAmount = CalculateHealth();
 
         MoneyText.text = "Score: $" + GameData.Money.ToString();
+
+        animator = ObjectiveMenu.GetComponent<Animator>();
+
+        EnemiesSpawned = GameManager.Instance.GetTotalEnemies();
     }
 
     // Update is called once per frame
@@ -42,6 +48,8 @@ public class Player : MonoBehaviour
         }
 
         MoneyText.text = "Score: $" + GameData.Money.ToString();
+
+        UpdateObjectives();
     }
 
     public void ApplyHealthPotion()
@@ -62,6 +70,42 @@ public class Player : MonoBehaviour
     public void ReduceHealth()
     {
         health -= 10f;
+    }
+
+    public void ToggleObjectives()
+    {
+        if (showObjectives == false)
+        {
+            showObjectives = true;
+            animator.SetBool("isOpen", true);
+        }
+        else
+        {
+            showObjectives = false;
+            animator.SetBool("isOpen", false);
+        }
+    }
+
+    private void UpdateObjectives()
+    {
+        float TotalEnemies = GameManager.Instance.GetTotalEnemies();
+        float TotalTimePlayed = GameManager.Instance.GetTotalTimePlayed();
+        bool BossStatus = GameManager.Instance.GetBossStatus();
+        string bossText;
+
+        if (BossStatus == false)
+        {
+            bossText = "Complete";
+        }
+        else
+        {
+            bossText = "Not Complete";
+        }
+
+        ObjectiveMenu.gameObject.transform.GetChild(1).GetComponent<TextMeshProUGUI>().text =
+            "Enemies Left: " + TotalEnemies + "/" + EnemiesSpawned +
+            "<br> Boss Killed: " + bossText +
+            "<br> Time Alive: " + TotalTimePlayed;
     }
 
     private float CalculateHealth()
