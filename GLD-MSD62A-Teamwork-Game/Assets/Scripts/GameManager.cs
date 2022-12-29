@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,29 +10,49 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance = null;
     public GameObject NextLevelPortal;
     public float timePlayed;
+    public AudioSource BackgroundMusic;
+
     private GameObject Player;
     private List<GameObject> Enemies;
     private GameObject canvas;
     private GameState gameState;
 
+    private void Awake()
+    {
+        if (GameManager.Instance != null)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+    }
+
     // Start is called before the first frame update
     void Start()
     {
-        //create singleton
-        if (GameManager.Instance != null && Instance != this)
-            Destroy(this);
-        else
-            Instance = this;
+        BackgroundMusic.Play();
 
         canvas = GameObject.Find("Canvas");
         Player = GameObject.Find("Player");
 
+        DontDestroyOnLoad(canvas);
+
+        gameState = GameState.Safehouse;
+
+    }
+
+    private void Update()
+    {
+        NextLevelPortal = GameObject.Find("NextLevelPortal");
     }
 
     public void OnChangeGameState(GameState newGameState)
     {
         gameState = newGameState;
-        canvas.GetComponentInChildren<InventoryManager>().RefreshInventoryGUI();
+        if(canvas != null)
+            canvas.GetComponentInChildren<InventoryManager>().RefreshInventoryGUI();
     }
 
     public GameState GetCurrentGameState()
@@ -64,6 +85,10 @@ public class GameManager : MonoBehaviour
             case "RETURN":
                 if (canvas.GetComponentInChildren<InventoryManager>().showMenu == true)
                     canvas.GetComponentInChildren<InventoryManager>().ConfirmSelection();
+                break;
+            case "PERIOD":
+                if (SceneManager.GetActiveScene().name == "Level1")
+                    KillEnemiesCheat();
                 break;
         }
     }
@@ -104,15 +129,14 @@ public class GameManager : MonoBehaviour
         return timePlayed;
     }
 
-    private void ShowToggleMenu()
-    {
-        //so call method inside InventoryManager.cs to toggle the inventory window's animation
-        canvas.GetComponentInChildren<InventoryManager>().ShowToggleMenu();
-    }
-
     public string GetCurrentLevel()
     {
         return SceneManager.GetActiveScene().name;
+    }
+
+    public void PlayAgain()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     //my game consists of two areas. AreaA (PlayArea) and AreaB (SafeZone)
@@ -122,8 +146,24 @@ public class GameManager : MonoBehaviour
         Arena
     }
 
-    private void OnCollisionEnter(Collision collision)
+    private void ShowToggleMenu()
     {
-        
+        //so call method inside InventoryManager.cs to toggle the inventory window's animation
+        canvas.GetComponentInChildren<InventoryManager>().ShowToggleMenu();
+    }
+
+    private void KillEnemiesCheat()
+    {
+        foreach (GameObject enemy in GameObject.FindGameObjectsWithTag("Enemy"))
+        {
+            if (enemy != null)
+                Destroy(enemy);
+        }
+
+        foreach (GameObject enemy in GameObject.FindGameObjectsWithTag("Boss"))
+        {
+            if (enemy != null)
+                Destroy(enemy);
+        }
     }
 }

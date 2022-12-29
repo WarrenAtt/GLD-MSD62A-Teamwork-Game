@@ -150,7 +150,7 @@ GameObject:
   - component: {fileID: 2759191635562523754}
   - component: {fileID: 1344740952691109413}
   m_Layer: 5
-  m_Name: Objectives
+  m_Name: ObjectivesMenu
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   title: Basic Shield
   icon: {fileID: 21300000, guid: 79e76e642ef9244b481f7269d0858194, type: 3}
-  increaseValue: 10
+  increaseValue: 300
   cost: 300
   type: 1

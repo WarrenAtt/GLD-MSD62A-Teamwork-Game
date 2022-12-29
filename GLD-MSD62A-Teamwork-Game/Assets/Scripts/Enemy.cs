@@ -60,21 +60,23 @@ public class Enemy : MonoBehaviour
     {
         if (SceneManager.GetActiveScene().name == "Level1")
         {
-            if (_agent.remainingDistance <= 0.5f && _agent.isStopped == false)
+            MoveToPlayer();
+
+            if (_agent.remainingDistance <= 2f)
             {
                 _agent.isStopped = true;
                 _animator.SetBool("isWalking", false);
-                MoveToPlayer();
             }
         }
 
         if (SceneManager.GetActiveScene().name == "Level2")
         {
-            if (_agent.remainingDistance <= 0.5f && _agent.isStopped == false)
+            StartCoroutine(WaitTimer(2, MoveToWaypoint));
+
+            if (_agent.remainingDistance <= 2f)
             {
                 _agent.isStopped = true;
                 _animator.SetBool("isWalking", false);
-                StartCoroutine(WaitTimer(2, MoveToWaypoint));
             }
         }
 
@@ -116,32 +118,40 @@ public class Enemy : MonoBehaviour
             }
         }
 
-        if (_agent.remainingDistance <= 2f)
+        if (_agent.isOnNavMesh)
         {
 
-            destination = tempWaypoints[UnityEngine.Random.Range(0, tempWaypoints.Count)].transform.position;
+            if (_agent.remainingDistance <= 2f)
+            {
+
+                destination = tempWaypoints[UnityEngine.Random.Range(0, tempWaypoints.Count)].transform.position;
+            }
+
+            _animator.SetBool("isWalking", true);
+            _agent.isStopped = false;
+
+            _agent.SetDestination(destination);
         }
-
-        _animator.SetBool("isWalking", true);
-        _agent.isStopped = false;
-
-        _agent.SetDestination(destination);
     }
 
     private void MoveToPlayer()
     {
-        if(_player != null && GameManager.Instance.GetCurrentGameState() == GameManager.GameState.Arena)
+        if (_player != null && GameManager.Instance.GetCurrentGameState() == GameManager.GameState.Arena)
         {
             destination = _player.transform.position;
         }
-        else{
-            MoveToWaypoint();
+        else
+        {
+            StartCoroutine(WaitTimer(2, MoveToWaypoint));
         }
 
-        _animator.SetBool("isWalking", true);
-        _agent.isStopped = false;
+        if (_agent.isOnNavMesh)
+        {
+            _animator.SetBool("isWalking", true);
+            _agent.isStopped = false;
 
-        _agent.SetDestination(destination);
+            _agent.SetDestination(destination);
+        }
     }
 
     private IEnumerator WaitTimer(float time, Action callback)

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -8,23 +9,42 @@ using UnityEngine.UI;
 public class Player : MonoBehaviour
 {
     [Header("Unity Setup")]
+    public static Player Instance = null;
     public List<GameObject> Doors;
     public Text MoneyText;
     public GameObject ObjectiveMenu;
     public float EnemiesSpawned;
+    public GameObject RetryButton;
+    [Tooltip("List of items")]
+    public List<ItemScriptableObject> itemsForPlayer;
 
-    [Header("Health")]
+    [Header("Player")]
     [SerializeField]
     public float health = 100f;
+    float initialWalkingSpeed;
+    float initialRunningSpeed;
     private float maxHealth;
     private Image healthBar;
 
     private bool showObjectives = false;
     private Animator animator;
 
+    private void Awake()
+    {
+        if (Player.Instance != null)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+    }
+
     // Start is called before the first frame update
     void Start()
     {
+
         maxHealth = health;
         healthBar = GameObject.Find("HealthBar").GetComponent<Image>();
 
@@ -35,6 +55,9 @@ public class Player : MonoBehaviour
         animator = ObjectiveMenu.GetComponent<Animator>();
 
         EnemiesSpawned = GameManager.Instance.GetTotalEnemies();
+
+        initialWalkingSpeed = gameObject.GetComponent<FPSControllerLPFP.FpsControllerLPFP>().walkingSpeed;
+        initialRunningSpeed = gameObject.GetComponent<FPSControllerLPFP.FpsControllerLPFP>().runningSpeed;
     }
 
     // Update is called once per frame
@@ -44,6 +67,11 @@ public class Player : MonoBehaviour
 
         if (health <= 0f)
         {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+
+            RetryButton.SetActive(true);
+
             Destroy(this.gameObject);
         }
 
@@ -54,17 +82,47 @@ public class Player : MonoBehaviour
 
     public void ApplyHealthPotion()
     {
-        health += 25f;
+        foreach(ItemScriptableObject item in itemsForPlayer)
+        {
+            if (item.name.Contains("Health"))
+            {
+                health += item.increaseValue;
+            }
+        }
     }
 
-    public void ApplyShieldPotion()
+    public IEnumerator ApplyShieldPotion()
     {
+        float currentHealth = health;
+
         //Shield Method
+        foreach (ItemScriptableObject item in itemsForPlayer)
+        {
+            if (item.name.Contains("Shield"))
+            {
+                health = item.increaseValue;
+                yield return new WaitForSeconds(15);
+                health = currentHealth;
+            }
+        }
     }
 
-    public void ApplySpeedPotion()
+    public IEnumerator ApplySpeedPotion()
     {
 
+        foreach (ItemScriptableObject item in itemsForPlayer)
+        {
+            if (item.name.Contains("Speed"))
+            {
+                gameObject.GetComponent<FPSControllerLPFP.FpsControllerLPFP>().walkingSpeed = initialWalkingSpeed * item.increaseValue;
+                gameObject.GetComponent<FPSControllerLPFP.FpsControllerLPFP>().runningSpeed = initialRunningSpeed * item.increaseValue;
+
+                yield return new WaitForSeconds(15);
+
+                gameObject.GetComponent<FPSControllerLPFP.FpsControllerLPFP>().walkingSpeed = initialWalkingSpeed;
+                gameObject.GetComponent<FPSControllerLPFP.FpsControllerLPFP>().runningSpeed = initialRunningSpeed;
+            }
+        }
     }
 
     public void ReduceHealth()
@@ -102,10 +160,11 @@ public class Player : MonoBehaviour
             bossText = "Not Complete";
         }
 
-        ObjectiveMenu.gameObject.transform.GetChild(1).GetComponent<TextMeshProUGUI>().text =
-            "Enemies Left: " + TotalEnemies + "/" + EnemiesSpawned +
-            "<br> Boss Killed: " + bossText +
-            "<br> Time Alive: " + TotalTimePlayed;
+        if(ObjectiveMenu != null)
+            ObjectiveMenu.gameObject.transform.GetChild(1).GetComponent<TextMeshProUGUI>().text =
+                "Enemies Left: " + TotalEnemies + "/" + EnemiesSpawned +
+                "<br> Boss Killed: " + bossText +
+                "<br> Time Alive: " + TotalTimePlayed;
     }
 
     private float CalculateHealth()
@@ -120,12 +179,9 @@ public class Player : MonoBehaviour
             ReduceHealth();
         }
 
-        foreach(GameObject Door in Doors)
+        if (other.gameObject.name == "Door")
         {
-            if(other.gameObject == Door)
-            {
-                Door.GetComponent<Animator>().SetBool("isOpen", true);
-            }
+            other.GetComponent<Animator>().SetBool("isOpen", true);
         }
 
         if (other.gameObject.name == "SafehouseFloor")
@@ -141,17 +197,15 @@ public class Player : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        foreach (GameObject Door in Doors)
+        if (other.gameObject.name == "Door")
         {
-            if (other.gameObject == Door)
-            {
-                Door.GetComponent<Animator>().SetBool("isOpen", false);
-            }
+            other.GetComponent<Animator>().SetBool("isOpen", false);
         }
     }
 
     private void OnCollisionEnter(Collision collision)
     {
+        
         if (collision.gameObject == GameManager.Instance.NextLevelPortal)
         {
             if (GameManager.Instance.GetCurrentLevel() == "Level1")
@@ -163,6 +217,13 @@ public class Player : MonoBehaviour
             {
                 SceneManager.LoadScene("Level3");
             }
+
+            if (GameManager.Instance.GetCurrentLevel() == "Level3")
+            {
+                SceneManager.LoadScene("Level1");
+            }
+
+            this.gameObject.transform.position = new Vector3(-11.0600004f, 0, -7.28999996f);
         }
     }
 }

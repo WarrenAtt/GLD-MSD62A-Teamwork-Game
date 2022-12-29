@@ -18,7 +18,7 @@ public class InputManager : MonoBehaviour
             GameManager.Instance.OnButtonPressed("J");
         if (Input.GetKeyDown(KeyCode.K))
             GameManager.Instance.OnButtonPressed("K");
-        if (Input.GetKeyDown(KeyCode.Escape))
-            GameManager.Instance.OnButtonPressed("ESCAPE");
+        if (Input.GetKeyDown(KeyCode.Period))
+            GameManager.Instance.OnButtonPressed("PERIOD");
     }
 }

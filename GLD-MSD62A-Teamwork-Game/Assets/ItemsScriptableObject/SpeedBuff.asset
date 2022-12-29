@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   title: SpeedBuff
   icon: {fileID: 21300000, guid: 25887e1e767bc774e9a24997a9343056, type: 3}
-  increaseValue: 2
+  increaseValue: 1.5
   cost: 500
   type: 2

@@ -59,14 +59,16 @@ public class InventoryManager : MonoBehaviour
     {
         if (GameManager.Instance.GetCurrentGameState() == GameManager.GameState.Arena)
         {
-
+            itemsSelectionPanel.SetActive(true);
+            shopSelectionPanel.SetActive(false);
             //load the controller so that we can play the animations (inventoryIn/inventoryOut)
             animator = itemsSelectionPanel.GetComponent<Animator>();
         }
 
         if (GameManager.Instance.GetCurrentGameState() == GameManager.GameState.Safehouse)
         {
-
+            itemsSelectionPanel.SetActive(false);
+            shopSelectionPanel.SetActive(true);
             animator = shopSelectionPanel.GetComponent<Animator>();
         }
     }
@@ -109,13 +111,13 @@ public class InventoryManager : MonoBehaviour
                 if (inventoryItem.item.type == ItemScriptableObject.Type.Shield)
                 {
                     print("Add Shield");
-                    _player.GetComponent<Player>().ApplyShieldPotion();
+                    StartCoroutine(_player.GetComponent<Player>().ApplyShieldPotion());
                 }
 
                 if (inventoryItem.item.type == ItemScriptableObject.Type.Speed)
                 {
                     print("Add Speed");
-                    _player.GetComponent<Player>().ApplySpeedPotion();
+                    StartCoroutine(_player.GetComponent<Player>().ApplySpeedPotion());
                 }
 
                 //check if the quantity is 0, if it is we need to remove this item from the itemsForPlayer list
