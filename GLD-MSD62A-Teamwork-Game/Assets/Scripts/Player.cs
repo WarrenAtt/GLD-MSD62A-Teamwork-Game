@@ -63,6 +63,7 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
         healthBar.fillAmount = CalculateHealth();
 
         if (health <= 0f)
@@ -77,7 +78,13 @@ public class Player : MonoBehaviour
 
         MoneyText.text = "Score: $" + GameData.Money.ToString();
 
-        UpdateObjectives();
+
+        if (SceneManager.GetActiveScene().name == "Level1")
+            UpdateObjectives();
+
+        else if (SceneManager.GetActiveScene().name == "Level2")
+            UpdatePersonalStats();
+
     }
 
     public void ApplyHealthPotion()
@@ -167,6 +174,13 @@ public class Player : MonoBehaviour
                 "<br> Time Alive: " + TotalTimePlayed;
     }
 
+    private void UpdatePersonalStats()
+    {
+
+        if (ObjectiveMenu != null)
+            ObjectiveMenu.gameObject.transform.GetChild(1).GetComponent<TextMeshProUGUI>().text = "Player Health: " + health;
+                
+    }
     private float CalculateHealth()
     {
         return health / maxHealth;

@@ -66426,6 +66426,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2526015505401241137, guid: 37a509334f4784661931364a50dff861, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: 0e1c07e72754a49cead495625e03b9a5, type: 2}
     - target: {fileID: 2526015505592540817, guid: 37a509334f4784661931364a50dff861, type: 3}
       propertyPath: m_RootOrder
       value: 1
@@ -72320,6 +72324,10 @@ PrefabInstance:
     - target: {fileID: 4286668269481561289, guid: 93093a0f6ba1a437cbd0b410092a5e9c, type: 3}
       propertyPath: m_Name
       value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 4765238692269750807, guid: 93093a0f6ba1a437cbd0b410092a5e9c, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5639254047317592958, guid: 93093a0f6ba1a437cbd0b410092a5e9c, type: 3}
       propertyPath: ObjectiveMenu

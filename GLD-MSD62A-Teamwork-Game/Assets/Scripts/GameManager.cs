@@ -89,7 +89,11 @@ public class GameManager : MonoBehaviour
             case "PERIOD":
                 if (SceneManager.GetActiveScene().name == "Level1")
                     KillEnemiesCheat();
+
+                if (SceneManager.GetActiveScene().name == "Level2")
+                    KillPlayerCheat();
                 break;
+
         }
     }
 
@@ -165,5 +169,15 @@ public class GameManager : MonoBehaviour
             if (enemy != null)
                 Destroy(enemy);
         }
+    }
+
+    private void KillPlayerCheat()
+    {
+        foreach (GameObject player in GameObject.FindGameObjectsWithTag("Player"))
+        {
+            if (player != null)
+                Destroy(player);
+        }
+
     }
 }
