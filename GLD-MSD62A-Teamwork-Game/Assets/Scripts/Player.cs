@@ -1,10 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+
 
 public class Player : MonoBehaviour
 {
@@ -12,11 +14,13 @@ public class Player : MonoBehaviour
     public static Player Instance = null;
     public List<GameObject> Doors;
     public Text MoneyText;
-    public GameObject ObjectiveMenu;
+    private GameObject ObjectiveMenu;
     public float EnemiesSpawned;
-    public GameObject RetryButton;
     [Tooltip("List of items")]
     public List<ItemScriptableObject> itemsForPlayer;
+
+
+    private GameObject Objective;
 
     [Header("Player")]
     [SerializeField]
@@ -44,6 +48,7 @@ public class Player : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        ObjectiveMenu = GameObject.Find("ObjectivesMenu");
 
         maxHealth = health;
         healthBar = GameObject.Find("HealthBar").GetComponent<Image>();
@@ -55,6 +60,8 @@ public class Player : MonoBehaviour
         animator = ObjectiveMenu.GetComponent<Animator>();
 
         EnemiesSpawned = GameManager.Instance.GetTotalEnemies();
+
+        
 
         initialWalkingSpeed = gameObject.GetComponent<FPSControllerLPFP.FpsControllerLPFP>().walkingSpeed;
         initialRunningSpeed = gameObject.GetComponent<FPSControllerLPFP.FpsControllerLPFP>().runningSpeed;
@@ -71,8 +78,6 @@ public class Player : MonoBehaviour
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
 
-            RetryButton.SetActive(true);
-
             Destroy(this.gameObject);
         }
 
@@ -81,9 +86,13 @@ public class Player : MonoBehaviour
 
         if (SceneManager.GetActiveScene().name == "Level1")
             UpdateObjectives();
-
         else if (SceneManager.GetActiveScene().name == "Level2")
             UpdatePersonalStats();
+        else if(SceneManager.GetActiveScene().name == "Level3")
+        {
+            Objective = GameObject.Find("Objective");
+            UpdateGameStats();
+        }
 
     }
 
@@ -139,16 +148,22 @@ public class Player : MonoBehaviour
 
     public void ToggleObjectives()
     {
-        if (showObjectives == false)
+        ObjectiveMenu = GameObject.Find("ObjectivesMenu");
+
+        if(ObjectiveMenu != null)
         {
-            showObjectives = true;
-            animator.SetBool("isOpen", true);
+            if (showObjectives == false)
+            {
+                showObjectives = true;
+                animator.SetBool("isOpen", true);
+            }
+            else
+            {
+                showObjectives = false;
+                animator.SetBool("isOpen", false);
+            }
         }
-        else
-        {
-            showObjectives = false;
-            animator.SetBool("isOpen", false);
-        }
+        
     }
 
     private void UpdateObjectives()
@@ -181,6 +196,17 @@ public class Player : MonoBehaviour
             ObjectiveMenu.gameObject.transform.GetChild(1).GetComponent<TextMeshProUGUI>().text = "Player Health: " + health;
                 
     }
+
+    private void UpdateGameStats()
+    {
+        float deltaTime = 0;
+        deltaTime += (Time.deltaTime - deltaTime) * 0.1f;
+        float fps = 1.0f / deltaTime;
+
+        if (ObjectiveMenu != null)
+            ObjectiveMenu.gameObject.transform.GetChild(1).GetComponent<TextMeshProUGUI>().text = "FPS: " + Mathf.Ceil(fps).ToString(); ;
+    }
+
     private float CalculateHealth()
     {
         return health / maxHealth;
@@ -238,6 +264,11 @@ public class Player : MonoBehaviour
             }
 
             this.gameObject.transform.position = new Vector3(-11.0600004f, 0, -7.28999996f);
+        }
+
+        if(Objective != null && collision.gameObject == Objective)
+        {
+            Destroy(collision.gameObject);
         }
     }
 }

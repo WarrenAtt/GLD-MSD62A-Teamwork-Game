@@ -19,14 +19,21 @@ public class Enemy : MonoBehaviour
     private NavMeshAgent _agent;
     private Animator _animator;
     private Vector3 destination;
+    private GameObject _objective;
 
-    // Start is called before the first frame update
-    void Start()
+    private void Awake()
     {
         _agent = GetComponent<NavMeshAgent>();
         _animator = GetComponent<Animator>();
         _waypoints = new List<GameObject>();
         _player = GameObject.FindGameObjectWithTag("Player");
+        _objective = GameObject.Find("Objective");
+    }
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        
 
         if(this.gameObject.name == "Boss")
         {
@@ -45,8 +52,6 @@ public class Enemy : MonoBehaviour
         {
             _waypoints.Add(wp);
         }
-
-        
 
         if (SceneManager.GetActiveScene().name == "Level2")
         {
@@ -71,6 +76,20 @@ public class Enemy : MonoBehaviour
 
         if (SceneManager.GetActiveScene().name == "Level2")
         {
+            StartCoroutine(WaitTimer(2, MoveToWaypoint));
+
+            if (_agent.remainingDistance <= 2f)
+            {
+                _agent.isStopped = true;
+                _animator.SetBool("isWalking", false);
+            }
+        }
+
+        if(SceneManager.GetActiveScene().name == "Level3")
+        {
+            if (_objective != null)
+                MoveObjective();
+
             StartCoroutine(WaitTimer(2, MoveToWaypoint));
 
             if (_agent.remainingDistance <= 2f)
@@ -123,8 +142,10 @@ public class Enemy : MonoBehaviour
 
             if (_agent.remainingDistance <= 2f)
             {
-
-                destination = tempWaypoints[UnityEngine.Random.Range(0, tempWaypoints.Count)].transform.position;
+                if(_objective == null)
+                    destination = tempWaypoints[UnityEngine.Random.Range(0, tempWaypoints.Count)].transform.position;
+                else
+                    destination = _objective.transform.position;
             }
 
             _animator.SetBool("isWalking", true);
@@ -152,6 +173,36 @@ public class Enemy : MonoBehaviour
 
             _agent.SetDestination(destination);
         }
+    }
+
+    private void MoveObjective()
+    {
+        List<GameObject> tempWaypoints = new List<GameObject>();
+
+        foreach (GameObject waypoint in _waypoints)
+        {
+            if (waypoint.transform.position != destination)
+            {
+                tempWaypoints.Add(waypoint);
+            }
+        }
+
+        NavMeshAgent objective = _objective.GetComponent<NavMeshAgent>();
+
+        objective.transform.rotation = Quaternion.Euler(-90, 0, 0);
+
+        if (objective.isOnNavMesh)
+        {
+
+            if (objective.remainingDistance <= 2f)
+            {
+                if (_objective != null)
+                {
+                    objective.isStopped = false;
+                    objective.SetDestination(tempWaypoints[UnityEngine.Random.Range(0, tempWaypoints.Count)].transform.position);
+                }   
+            }
+        } 
     }
 
     private IEnumerator WaitTimer(float time, Action callback)

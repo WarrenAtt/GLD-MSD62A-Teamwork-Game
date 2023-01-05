@@ -78,7 +78,8 @@ public class GameManager : MonoBehaviour
                 }
                 else
                 {
-                    Player.GetComponent<Player>().ToggleObjectives();
+                    if(Player != null)
+                        Player.GetComponent<Player>().ToggleObjectives();
                 }
                 
                 break;
@@ -92,6 +93,8 @@ public class GameManager : MonoBehaviour
 
                 if (SceneManager.GetActiveScene().name == "Level2")
                     KillPlayerCheat();
+                if (SceneManager.GetActiveScene().name == "Level3")
+                    UnlimitedAmmoCheat();
                 break;
 
         }
@@ -173,11 +176,18 @@ public class GameManager : MonoBehaviour
 
     private void KillPlayerCheat()
     {
-        foreach (GameObject player in GameObject.FindGameObjectsWithTag("Player"))
+        if(Player != null)
         {
-            if (player != null)
-                Destroy(player);
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+            Player.GetComponent<Player>().health = 0;
         }
 
+    }
+
+    private void UnlimitedAmmoCheat()
+    {
+        AutomaticGunScriptLPFP PlayerGun = Player.GetComponentInChildren<AutomaticGunScriptLPFP>();
+        Player.GetComponentInChildren<AutomaticGunScriptLPFP>().currentAmmo = PlayerGun.ammo;
     }
 }

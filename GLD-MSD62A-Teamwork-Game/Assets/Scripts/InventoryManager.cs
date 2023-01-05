@@ -270,7 +270,8 @@ public class InventoryManager : MonoBehaviour
 
     public void AddItemToInventory(ItemScriptableObject addedItem)
     {
-        int countItems = itemsForPlayer.Where(x => x.item == addedItem).ToList().Count;
+        int countItems = itemsForPlayer.Where(x => x.item
+        == addedItem).ToList().Count;
 
         if (itemsSelectionPanel.transform.Find("Button0").gameObject.activeSelf == false)
         {
